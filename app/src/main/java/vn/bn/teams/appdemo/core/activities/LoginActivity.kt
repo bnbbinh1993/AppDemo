@@ -123,6 +123,7 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("__tag", "signInWithEmail:success")
                     val user = auth.currentUser
                     startActivity(Intent(this@LoginActivity, HomeScreenActivity::class.java))
+                    finish()
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("__tag", "signInWithEmail:failure", task.exception)
