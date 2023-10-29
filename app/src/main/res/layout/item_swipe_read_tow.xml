@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linear3"
+    android:layout_width="@dimen/_80sdp"
+    android:layout_height="@dimen/_80sdp"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:layout_margin="@dimen/_10sdp"
+    android:layout_centerInParent="true"
+    android:background="@drawable/custom_boder_background">
+
+    <ImageView
+        android:layout_centerInParent="true"
+        android:src="@drawable/img_alphabet_a"
+        android:layout_marginHorizontal="@dimen/_5sdp"
+        android:layout_gravity="center"
+        android:id="@+id/alpha1"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp">
+    </ImageView>
+</RelativeLayout>

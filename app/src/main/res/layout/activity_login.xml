@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ImageView
+        android:scaleType="centerCrop"
+        android:src="@drawable/background1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:weightSum="14"
+        android:id="@+id/viewBig">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="3">
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/img_logo"
+                android:layout_width="180dp"
+                android:layout_height="80dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:gravity="center">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/box"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:weightSum="20">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="18"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerInParent="true"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:includeFontPadding="false"
+                            android:text="ĐĂNG NHẬP"
+                            android:textColor="#000"
+                            android:textFontWeight="700"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/title"
+                            android:layout_marginHorizontal="35dp"
+                            android:layout_marginTop="16dp"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="Học nói tiếng việt"
+                            android:textColor="#000"
+                            android:textFontWeight="400"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/user"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/description"
+                            android:layout_marginLeft="24dp"
+                            android:layout_marginTop="15dp"
+                            android:includeFontPadding="false"
+                            android:text="Tên Đăng Nhập"
+                            android:textColor="#000"
+                            android:textFontWeight="700"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:id="@+id/lnEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_below="@id/user"
+                            android:layout_marginHorizontal="24dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@drawable/border_edittext">
+
+                            <ImageView
+                                android:id="@+id/imgMail"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="18dp"
+                                android:src="@drawable/email" />
+
+                            <EditText
+                                android:id="@+id/edtUserName"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_below="@id/email"
+                                android:layout_marginLeft="10dp"
+                                android:background="@null"
+                                android:hint="Email"
+                                android:imeOptions="actionNext"
+                                android:inputType="textWebEmailAddress|textEmailAddress"
+                                android:lines="1"
+                                android:maxLines="1"
+                                android:textColorHint="#B6B3B3"
+                                android:textSize="14dp" />
+
+                        </LinearLayout>
+
+
+                        <TextView
+                            android:id="@+id/errId"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/lnEmail"
+                            android:layout_marginLeft="60dp"
+                            android:textColor="#F80505"
+                            android:textSize="14dp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/password"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/errId"
+                            android:layout_marginLeft="24dp"
+                            android:layout_marginTop="5dp"
+                            android:includeFontPadding="false"
+                            android:text="Mật khẩu"
+                            android:textColor="#000"
+                            android:textFontWeight="700"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:id="@+id/lnPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:layout_below="@id/password"
+                            android:layout_marginHorizontal="24dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@drawable/border_edittext">
+
+                            <ImageView
+                                android:id="@+id/imgPass"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="18dp"
+                                android:src="@drawable/lock" />
+
+                            <EditText
+                                android:id="@+id/edtPassWord"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:layout_marginLeft="10dp"
+                                android:background="@null"
+                                android:hint="************"
+                                android:inputType="textPassword"
+                                android:imeOptions="actionDone"
+                                android:textSize="14dp"
+                                android:textColorHint="#B6B3B3" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/errInvalid"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/lnPassword"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:textColor="#EA0404"
+                            android:textSize="10dp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/errPass"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/lnPassword"
+                            android:layout_marginLeft="60dp"
+                            android:textColor="#EA0404"
+                            android:textSize="14dp"
+                            android:visibility="gone" />
+
+                        <Button
+                            android:id="@+id/btnLogin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/errPass"
+                            android:layout_centerInParent="true"
+                            android:layout_marginHorizontal="25dp"
+                            android:layout_marginTop="40dp"
+                            android:background="@drawable/btn"
+                            android:includeFontPadding="false"
+                            android:text="ĐĂNG NHẬP"
+                            android:textColor="#FFFFFF"
+                            android:textFontWeight="400"
+                            android:textSize="14dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/registerAccount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/btnLogin"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="10dp"
+                            android:gravity="center"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="BẠN CHƯA CÓ TÀI KHOẢN?"
+                            android:textColor="#1991F1"
+                            android:textSize="13dp"
+                            android:textStyle="italic" />
+
+                        <TextView
+                            android:id="@+id/forgotPassword"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/registerAccount"
+                            android:layout_centerHorizontal="true"
+                            android:gravity="center"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="QUÊN MẬT KHẨU?"
+                            android:textColor="#1991F1"
+                            android:textSize="13dp"
+                            android:textStyle="italic" />
+
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

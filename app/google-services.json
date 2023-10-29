@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "869846446990",
+    "project_id": "languageforkid-d1fa4",
+    "storage_bucket": "languageforkid-d1fa4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:869846446990:android:8fa82c8f0fd13d478a2adf",
+        "android_client_info": {
+          "package_name": "vn.bn.teams.appdemo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5vej0sS20mbpjT470fQZkccTC9MUqJ_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
