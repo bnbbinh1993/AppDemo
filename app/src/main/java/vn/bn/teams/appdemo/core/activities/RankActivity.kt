@@ -56,7 +56,7 @@ class RankActivity : BaseActivity() {
 
     private var lastVisible: DocumentSnapshot? = null
     private fun loadNotes(isLoadMore: Boolean) {
-        val collectionReference = FirebaseFirestore.getInstance().collection("rank")
+        val collectionReference = FirebaseFirestore.getInstance().collection("users")
         var q = collectionReference
             .orderBy("rank", Query.Direction.DESCENDING)
         if (lastVisible != null) {

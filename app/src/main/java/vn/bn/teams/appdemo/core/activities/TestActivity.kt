@@ -150,7 +150,7 @@ class TestActivity : BaseActivity() {
         map["avatar"] = UserManager.userInfo!!.photo!!
         map["rank"] = FieldValue.increment(rank)
         val db = FirebaseFirestore.getInstance()
-        db.collection("rank").document(UserManager.userInfo!!.uid!!).set(map, SetOptions.merge())
+        db.collection("users").document(UserManager.userInfo!!.uid!!).set(map, SetOptions.merge())
             .addOnCompleteListener {
                 if (isUnavailable) {
                     return@addOnCompleteListener

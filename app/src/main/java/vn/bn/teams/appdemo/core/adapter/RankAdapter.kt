@@ -68,7 +68,7 @@ class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         tvSTT.text =(position + 1).toString()
         Glide.with(itemView.context)
-            .load(data.avatar)
+            .load(data.photo)
             .circleCrop()
             .error(R.drawable.test_avt)
             .skipMemoryCache(true)
@@ -79,7 +79,7 @@ class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         avatar.scaleType = ImageView.ScaleType.CENTER_CROP
 
-        name.text = data.name
+        name.text = data.accountName
         point.text = data.rank.toString() + " Điểm"
 
 

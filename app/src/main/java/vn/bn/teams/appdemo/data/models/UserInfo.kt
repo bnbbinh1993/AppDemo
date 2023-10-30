@@ -1,6 +1,6 @@
 package vn.bn.teams.appdemo.data.models
 
-class UserInfo {
+open class UserInfo {
 
     var uid: String? = null
     var email: String? = null
