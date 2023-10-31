@@ -143,7 +143,7 @@ class TestActivity : BaseActivity() {
         } else {
             0
         }
-        DialogUtil.progressDlgSetMsg("Đang xử lý")
+        DialogUtil.progressDlgShow(this,"Đang xử lý")
         val map: MutableMap<String, Any> = HashMap()
         map["uid"] = UserManager.userInfo!!.uid!!
         map["name"] = UserManager.userInfo!!.accountName!!

@@ -1,19 +1,23 @@
 package vn.bn.teams.appdemo.core.activities
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import androidx.activity.addCallback
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.play.integrity.internal.t
 import vn.bn.teams.appdemo.core.adapter.DetailBigListAlphabetAdapter
+import vn.bn.teams.appdemo.core.custom.AudioManager
 import vn.bn.teams.appdemo.data.Constants
 import vn.bn.teams.appdemo.data.database.MyDatabase
 import vn.bn.teams.appdemo.data.models.DataAlphabetFollow
-import vn.bn.teams.appdemo.databinding.ActivityBigListFollowBinding
+import vn.bn.teams.appdemo.databinding.ActivityDetailBigListFollowBinding
 
 
 class DetailBigListItemActivity : AppCompatActivity() {
@@ -25,16 +29,17 @@ class DetailBigListItemActivity : AppCompatActivity() {
     private var checkDestroy: Boolean = false
     var mediaPlayer: MediaPlayer? = null
     var i = 0
-    private lateinit var binding: ActivityBigListFollowBinding
+    private lateinit var binding: ActivityDetailBigListFollowBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityBigListFollowBinding.inflate(layoutInflater)
+        binding = ActivityDetailBigListFollowBinding.inflate(layoutInflater)
         setContentView(binding.root)
         db = MyDatabase(this)
         initView()
 
         onClick()
     }
+
     private fun initView() {
         val title = intent.getStringExtra(Constants.KEY_DETAIL)
         val key = intent.getStringExtra(Constants.KEY_FOLLOW)
@@ -49,6 +54,7 @@ class DetailBigListItemActivity : AppCompatActivity() {
                     playListSound()
                 }
             }
+
             Constants.NUMBER -> {
                 arrayList = db?.getAllItemsNumber()!!
                 initRecyclerview()
@@ -58,6 +64,7 @@ class DetailBigListItemActivity : AppCompatActivity() {
                     playListSound()
                 }
             }
+
             Constants.ANIMALS -> {
                 arrayList = db?.getAllItemsAnimal()!!
                 initRecyclerview()
@@ -67,6 +74,7 @@ class DetailBigListItemActivity : AppCompatActivity() {
                     playListSound()
                 }
             }
+
             Constants.FRUITS -> {
                 arrayList = db?.getAllItemsFruit()!!
                 initRecyclerview()
@@ -76,6 +84,7 @@ class DetailBigListItemActivity : AppCompatActivity() {
                     playListSound()
                 }
             }
+
             Constants.SQUARE -> {
                 arrayList = db?.getAllItemsGeometry()!!
                 initRecyclerview()
@@ -85,6 +94,7 @@ class DetailBigListItemActivity : AppCompatActivity() {
                     playListSound()
                 }
             }
+
             Constants.SCHOOL -> {
                 arrayList = db?.getAllItemsSchool()!!
                 initRecyclerview()
@@ -94,15 +104,18 @@ class DetailBigListItemActivity : AppCompatActivity() {
                     playListSound()
                 }
             }
+
             Constants.COLOR -> {
                 arrayList = db?.getAllItemsColor()!!
                 initRecyclerview()
                 binding.txtTitle.text = title
                 if (key == Constants.FOLLOW) {
+
                     playlist = db?.getSoundtemsColor(this)
                     playListSound()
                 }
             }
+
             Constants.FLOWERS -> {
                 arrayList = db?.getAllItemsFlower()!!
                 initRecyclerview()
@@ -112,6 +125,7 @@ class DetailBigListItemActivity : AppCompatActivity() {
                     playListSound()
                 }
             }
+
             Constants.VEHICLE -> {
                 arrayList = db?.getAllItemsVehicle()!!
                 initRecyclerview()
@@ -121,6 +135,7 @@ class DetailBigListItemActivity : AppCompatActivity() {
                     playListSound()
                 }
             }
+
             Constants.COUNTRY -> {
                 arrayList = db?.getAllItemsCountry()!!
                 initRecyclerview()
@@ -132,11 +147,12 @@ class DetailBigListItemActivity : AppCompatActivity() {
             }
         }
     }
-    private fun playListSound() {
 
+    private fun playListSound() {
         mediaPlayer = MediaPlayer.create(this, playlist!![0])
         mediaPlayer?.start()
         if (playlist!!.size > 1) playNext()
+
     }
 
     private fun playNext() {
@@ -145,9 +161,11 @@ class DetailBigListItemActivity : AppCompatActivity() {
             if (!checkDestroy) {
                 mediaPlayer = MediaPlayer.create(this, playlist!![++i])
                 mediaPlayer?.start()
-                binding.listFollow.smoothScrollToPosition(i+12)
+                binding.listDetailAlphabet.smoothScrollToPosition(i+12)
             }
-            if (playlist!!.size > i +1 && !checkDestroy) playNext()
+            mediaPlayer!!.setOnCompletionListener {
+                if (playlist!!.size > i +1 && !checkDestroy) playNext()
+            }
         }, 2000)
     }
 
@@ -158,9 +176,10 @@ class DetailBigListItemActivity : AppCompatActivity() {
 
     private fun onClick() {
         binding.btnBack.setOnClickListener {
-            finish()
+            callback.handleOnBackPressed()
         }
     }
+
     private fun setAnimation(itemView: View) {
         val anim = ValueAnimator.ofFloat(1f, 1.5f)
         anim.duration = 300
@@ -173,12 +192,36 @@ class DetailBigListItemActivity : AppCompatActivity() {
         anim.start()
     }
 
+
     private fun initRecyclerview() {
-        gridLayoutManager = GridLayoutManager(applicationContext, 3, LinearLayoutManager.VERTICAL, false)
-        binding.listFollow.layoutManager = gridLayoutManager
-        binding.listFollow.setHasFixedSize(true)
+        gridLayoutManager =
+            GridLayoutManager(applicationContext, 3, LinearLayoutManager.VERTICAL, false)
+        binding.listDetailAlphabet.layoutManager = gridLayoutManager
+        binding.listDetailAlphabet.setHasFixedSize(true)
         detailBigListAlphabetAdapter = DetailBigListAlphabetAdapter(applicationContext, arrayList)
-        binding.listFollow.adapter = detailBigListAlphabetAdapter
+        binding.listDetailAlphabet.adapter = detailBigListAlphabetAdapter
+
+        detailBigListAlphabetAdapter!!.itemClick =
+            { pos: Int, dataAlphabetFollow: DataAlphabetFollow, view: View ->
+
+                val audio = AudioManager(this, dataAlphabetFollow.sound)
+                audio.startSound()
+
+
+            }
     }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+        callback.handleOnBackPressed()
+    }
+
+    private val callback = this.onBackPressedDispatcher.addCallback(this) {
+        if (mediaPlayer != null) {
+            mediaPlayer!!.release()
+        }
+        finish()
+    }
+
 }
 

@@ -1,5 +1,6 @@
 package vn.bn.teams.appdemo.core.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Handler
@@ -20,8 +21,9 @@ import vn.bn.teams.appdemo.data.Constants
 import vn.bn.teams.appdemo.data.models.DataFollow
 
 
-class BigListFollowAdapter(var context: Context, var arrayList: ArrayList<DataFollow>, var mContext: BigListItemActivity) :
+class BigListFollowAdapter(var context: Context, var mContext: BigListItemActivity) :
     RecyclerView.Adapter<BigListFollowAdapter.ViewHolder>() {
+    private var arrayList: ArrayList<DataFollow>? = arrayListOf()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemHolder = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_big_list_follow, parent, false)
@@ -29,7 +31,7 @@ class BigListFollowAdapter(var context: Context, var arrayList: ArrayList<DataFo
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val dataBigList: DataFollow = arrayList[position]
+        val dataBigList: DataFollow = arrayList!![position]
         getImageId(dataBigList.img_content, context)?.let { holder.content.setImageResource(it) }
         setAnimation(holder.itemView)
         holder.title.text = dataBigList.title
@@ -56,8 +58,14 @@ class BigListFollowAdapter(var context: Context, var arrayList: ArrayList<DataFo
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun setData(list: ArrayList<DataFollow>) {
+        this.arrayList = list
+        notifyDataSetChanged()
+    }
+
     override fun getItemCount(): Int {
-        return arrayList.size
+        return arrayList!!.size
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -72,6 +80,7 @@ class BigListFollowAdapter(var context: Context, var arrayList: ArrayList<DataFo
             context.resources.getIdentifier(name, "drawable", context.packageName)
         }
     }
+
     fun setAnimation(item: View) {
         AnimationUtils.loadAnimation(context, R.anim.anim_flip).also { hyperspaceJumpAnimation ->
             item.startAnimation(hyperspaceJumpAnimation)

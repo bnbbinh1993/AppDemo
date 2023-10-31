@@ -1,8 +1,16 @@
 package vn.bn.teams.appdemo.core.utils
 
+import android.app.Dialog
 import android.app.ProgressDialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.Window
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.button.MaterialButton
+import vn.bn.teams.appdemo.R
 
 /**
  * DialogUtilクラス
@@ -10,34 +18,38 @@ import androidx.appcompat.app.AppCompatActivity
 class DialogUtil {
     companion object {
         private const val TAG = "DialogUtil"
-        private var mProgressDialog: ProgressDialog? = null
+
+        var dialog: Dialog? = null
 
         // プログレスダイアログ共通処理
         fun progressDlgShow(act: AppCompatActivity, mes: String) {
-            if (mProgressDialog != null) {
-                mProgressDialog?.dismiss()
-                mProgressDialog = null
+            if (dialog != null) {
+                dialog!!.dismiss()
+                dialog = null
             }
             if (act.isFinishing) {
-                // 呼出し元Activityが既に終了状態の場合はキャンセル
-                // 「戻る」ボタンと各操作を同時押しするなどした場合に発生する
                 Log.d(TAG, "owner Activity isFinishing!!!")
                 return
             }
-            mProgressDialog = ProgressDialog(act)
-            mProgressDialog?.setCancelable(false)
-            mProgressDialog?.setMessage(mes)
-            mProgressDialog?.show()
-        }
+            dialog = Dialog(act)
+            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog!!.setContentView(
+                LayoutInflater.from(act)
+                    .inflate(R.layout.dialog_loading, null)
+            )
+            dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog!!.setCanceledOnTouchOutside(false)
+            dialog!!.setCancelable(false)
+            dialog!!.show()
+            val tvMessage = dialog!!.findViewById<TextView>(R.id.tvMessage)
+            tvMessage.text = mes
 
-        fun progressDlgSetMsg(mes: String) {
-            mProgressDialog?.setMessage(mes)
         }
 
         fun progressDlgHide() {
-            if (mProgressDialog != null) {
-                mProgressDialog?.dismiss()
-                mProgressDialog = null
+            if (dialog != null) {
+                dialog?.dismiss()
+                dialog = null
             }
         }
 

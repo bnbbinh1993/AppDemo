@@ -2,6 +2,9 @@ package vn.bn.teams.appdemo.core.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +24,7 @@ import vn.bn.teams.appdemo.data.Constants
 import vn.bn.teams.appdemo.data.database.MyDatabase
 import vn.bn.teams.appdemo.data.models.BigListResponse
 import vn.bn.teams.appdemo.data.models.DataFollow
+import java.util.Locale
 
 
 class BigListItemActivity : AppCompatActivity() {
@@ -29,8 +33,9 @@ class BigListItemActivity : AppCompatActivity() {
     private var bigListAdapter: BigListFollowAdapter? = null
     var key: String? = null
     private lateinit var sessionManager: SessionManager
-     lateinit var binding: ActivityBigListFollowBinding
+    lateinit var binding: ActivityBigListFollowBinding
     private var db: MyDatabase? = null
+    private var list: ArrayList<DataFollow>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBigListFollowBinding.inflate(layoutInflater)
@@ -38,63 +43,64 @@ class BigListItemActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
         //getData()
         db = MyDatabase(this)
-        val list = db?.getAllItemsBigList()
-        initRecyclerview(list)
+        list = db?.getAllItemsBigList()
+        initRecyclerview()
         initView()
         onClick()
     }
 
-    private fun getData() {
-        val retIn = RetrofitInstance.getRetrofitInstance().create(ApiInterface::class.java)
-        retIn.getListTopPic("${sessionManager.fetchAuthToken()}").enqueue(object :
-            Callback<BigListResponse> {
-            override fun onFailure(call: Call<BigListResponse>, t: Throwable) {
-                DialogUtil.progressDlgHide()
-                Toast.makeText(
-                    this@BigListItemActivity,
-                    t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            override fun onResponse(
-                call: Call<BigListResponse>,
-                response: Response<BigListResponse>
-            ) {
-                if (response.body()?.code == 200) {
-                   // initRecyclerview(response.body()?.result!!.data)
-                } else {
-                    Toast.makeText(
-                        this@BigListItemActivity,
-                        "Kết Nối Gặp Sự Cố! Vui Lòng Kiểm Tra Lại",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                }
-            }
-
-        })
-    }
 
     private fun onClick() {
         binding.btnBack.setOnClickListener {
             val intent = Intent(this@BigListItemActivity, HomeScreenActivity::class.java)
             startActivity(intent)
         }
+
+        binding.edtText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterData(s.toString())
+            }
+        })
+
     }
+
+    private fun filterData(query: String?) {
+        list!!.clear()
+        if (query.isNullOrBlank()) {
+            list = db?.getAllItemsBigList()
+        } else {
+            for (item in db?.getAllItemsBigList()!!) {
+                if (item.title.lowercase().contains(query.lowercase())) {
+                    list!!.add(item)
+                }
+            }
+        }
+        list?.let { bigListAdapter!!.setData(it) }
+    }
+
 
     private fun initView() {
         val title = intent.getStringExtra(Constants.KEY_HOME)
         key = intent.getStringExtra(Constants.KEY_HOME_FOLLOW)
         binding.txtTitle.text = title
+
     }
 
-    private fun initRecyclerview(arrayList: ArrayList<DataFollow>?) {
-        gridLayoutManager = GridLayoutManager(applicationContext, 2, LinearLayoutManager.VERTICAL, false)
+    private fun initRecyclerview() {
+        gridLayoutManager =
+            GridLayoutManager(applicationContext, 2, LinearLayoutManager.VERTICAL, false)
         binding.listFollow.layoutManager = gridLayoutManager
         binding.listFollow.setHasFixedSize(true)
-        bigListAdapter = arrayList?.let { BigListFollowAdapter(applicationContext, it, this) }
+        bigListAdapter =BigListFollowAdapter(applicationContext, this)
         binding.listFollow.adapter = bigListAdapter
+        bigListAdapter!!.setData(list!!)
         DialogUtil.progressDlgHide()
     }
 

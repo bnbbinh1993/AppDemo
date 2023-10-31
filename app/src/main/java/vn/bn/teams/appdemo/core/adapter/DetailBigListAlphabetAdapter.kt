@@ -9,15 +9,22 @@ import androidx.recyclerview.widget.RecyclerView
 import vn.bn.teams.appdemo.core.custom.AudioManager
 
 import android.animation.ValueAnimator
+import com.google.firebase.annotations.concurrent.Background
 import vn.bn.teams.appdemo.R
+import vn.bn.teams.appdemo.data.Constants
 import vn.bn.teams.appdemo.data.models.DataAlphabetFollow
 
 
 class DetailBigListAlphabetAdapter(
     var context: Context,
-    var arrayList: MutableList<DataAlphabetFollow>
+    var arrayList: MutableList<DataAlphabetFollow>,
+    var itemClick: ((position: Int,data:DataAlphabetFollow , view: View) -> Unit)? = null
 ) :
     RecyclerView.Adapter<DetailBigListAlphabetAdapter.ViewHolder>() {
+
+    var pos: Int = 0
+    var type = "default"
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemHolder = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_detail_alphabet, parent, false)
@@ -27,12 +34,17 @@ class DetailBigListAlphabetAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val dataAlphabetFollow = arrayList[position]
         getImageId(dataAlphabetFollow.image, context)?.let { holder.image.setImageResource(it) }
+
+        if (pos == position && type == Constants.FOLLOW) {
+            setAnimation(holder.itemView)
+        }
+
         holder.itemView.setOnClickListener {
-            val audioManager = AudioManager(context, dataAlphabetFollow.sound)
-            audioManager.startSound()
+            itemClick?.invoke(holder.adapterPosition,dataAlphabetFollow,it)
             setAnimation(holder.itemView)
         }
     }
+
 
     private fun setAnimation(itemView: View) {
         val anim = ValueAnimator.ofFloat(1f, 1.5f)
@@ -45,6 +57,7 @@ class DetailBigListAlphabetAdapter(
         anim.repeatMode = ValueAnimator.REVERSE
         anim.start()
     }
+
 
     override fun getItemCount(): Int {
         return arrayList.size
@@ -60,5 +73,9 @@ class DetailBigListAlphabetAdapter(
         } else {
             context.resources.getIdentifier(name, "drawable", context.packageName)
         }
+    }
+
+    fun notification(pos: Int) {
+        notifyItemChanged(pos)
     }
 }

@@ -54,11 +54,12 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
         binding.btnLogin.setOnClickListener {
+
             if (binding.edtUserName.text.toString() != "" && binding.edtPassWord.text.toString() != "") {
                 DialogUtil.progressDlgShow(this, "Chờ xíu...")
                 doLogin(binding.edtUserName.text.toString(), binding.edtPassWord.text.toString())
             } else {
-                Toast.makeText(this, "Vui Lòng Nhập Đầy Đủ Thông Tin", Toast.LENGTH_SHORT).show()
+                showNotification("Vui lòng nhập đủ thông tin")
             }
         }
         binding.forgotPassword.setOnClickListener {
@@ -73,65 +74,35 @@ class LoginActivity : AppCompatActivity() {
         logInByFirebase(username, password)
     }
 
-    fun logIn(
-        username: String,
-        password: String
-    ) {
-        val retIn = RetrofitInstance.getRetrofitInstance().create(ApiInterface::class.java)
-        val registerInfo = LoginRequest(username = username, password = password)
-
-        retIn.login(registerInfo).enqueue(object :
-            Callback<LoginResponse> {
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                DialogUtil.progressDlgHide()
-                Toast.makeText(
-                    this@LoginActivity,
-                    t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                if (response.body()?.code == 200) {
-                    sessionManager.saveAuthToken(response.body()?.result!!.accessToken)
-                    sessionManager.saveUserName(response.body()?.result!!.username)
-                    Log.d("TruongDV19", sessionManager.fetchAuthUserName().toString())
-                    val intent = Intent(this@LoginActivity, HomeScreenActivity::class.java)
-                    startActivity(intent)
-                } else {
-                    DialogUtil.progressDlgHide()
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Đăng Nhập Không Thành Công! \nVui Lòng Kiểm Tra Lại Thông Tin Tài Khoản",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                }
-            }
-
-        })
+    private fun showNotification(message: String) {
+        val dialog = Dialog(this@LoginActivity)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(
+            LayoutInflater.from(this@LoginActivity)
+                .inflate(R.layout.dialog_notification_error, null)
+        )
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+        val cancel = dialog.findViewById<MaterialButton>(R.id.btnCancel)
+        val tvMessage = dialog.findViewById<TextView>(R.id.tvMessage)
+        tvMessage.text = message
+        cancel.setOnClickListener {
+            dialog.dismiss()
+        }
     }
 
-
     private fun logInByFirebase(email: String, password: String) {
-
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 DialogUtil.progressDlgHide()
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d("__tag", "signInWithEmail:success")
-                    val user = auth.currentUser
-                    startActivity(Intent(this@LoginActivity, HomeScreenActivity::class.java))
+                    val intent = Intent(this@LoginActivity, HomeScreenActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
                     finish()
                 } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w("__tag", "signInWithEmail:failure", task.exception)
-                    Toast.makeText(
-                        baseContext,
-                        "Authentication failed.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
+                    showNotification("Thông tin email hoặc mật khẩu không chính xác!")
 
                 }
             }
@@ -155,7 +126,7 @@ class LoginActivity : AppCompatActivity() {
 
         send.setOnClickListener {
             dialog.dismiss()
-            if (tvEmail.text.isNotEmpty()){
+            if (tvEmail.text.isNotEmpty()) {
                 auth.sendPasswordResetEmail(tvEmail.text.toString())
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {

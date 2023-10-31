@@ -1,28 +1,27 @@
 package vn.bn.teams.appdemo.core.activities
 
+
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
+import android.util.Patterns
+import android.view.LayoutInflater
+import android.view.Window
+import android.widget.TextView
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-
-
-import vn.bn.teams.appdemo.core.utils.DialogUtil
-
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import vn.bn.teams.appdemo.BaseActivity
-import vn.bn.teams.appdemo.api.ApiInterface
-import vn.bn.teams.appdemo.api.RetrofitInstance
-import vn.bn.teams.appdemo.data.models.LoginResponse
-import vn.bn.teams.appdemo.data.models.RegisterRequest
+import vn.bn.teams.appdemo.R
+import vn.bn.teams.appdemo.core.utils.DialogUtil
 import vn.bn.teams.appdemo.databinding.ActivityRegisterBinding
 
 
@@ -39,21 +38,30 @@ class RegisterActivity : BaseActivity() {
 
     private fun onClick() {
         binding.btnRegister.setOnClickListener {
-            if (binding.edtEmail.text.toString() != "" && binding.edtPass.text.toString() != "" && binding.edtName.text.toString() != "") {
-                DialogUtil.progressDlgShow(this, "Chờ xíu...")
-//                doSignUp(
-//                    binding.edtEmail.text.toString(),
-//                    binding.edtUser.text.toString(),
-//                    binding.edtPass.text.toString(),
-//                    binding.edtName.text.toString()
-//                )
-                registerByFirebase(
-                    binding.edtName.text.toString(),
-                    binding.edtEmail.text.toString(),
-                    binding.edtPass.text.toString()
-                )
+            DialogUtil.progressDlgShow(this, "Chờ xíu...")
+            val email = binding.edtEmail.text.toString()
+            val pass = binding.edtPass.text.toString()
+            val name = binding.edtName.text.toString()
+            if (email != "" && pass != "" && name != "") {
+                if (!isValidEmail(email)) {
+                    DialogUtil.progressDlgHide()
+                    showNotification("Vui lòng nhập đúng email")
+                    binding.edtEmail.requestFocus()
+                } else if (pass.length >= 6 && !containsLetterAndNumber(pass)) {
+                    DialogUtil.progressDlgHide()
+                    showNotification("Mật khẩu phải có cả chữ và số\nTối thiểu 6 kí tự")
+                    binding.edtPass.requestFocus()
+                }else{
+                    registerByFirebase(
+                        binding.edtName.text.toString(),
+                        binding.edtEmail.text.toString(),
+                        binding.edtPass.text.toString()
+                    )
+                }
+
             } else {
-                Toast.makeText(this, "Vui Lòng Nhập Đầy Đủ Thông Tin", Toast.LENGTH_SHORT).show()
+                DialogUtil.progressDlgHide()
+                showNotification("Vui lòng nhập đủ thông tin")
             }
         }
         binding.backToLogin.setOnClickListener {
@@ -62,42 +70,33 @@ class RegisterActivity : BaseActivity() {
         }
     }
 
-    private fun doSignUp(
-        email: String, username: String,
-        password: String, name: String
-    ) {
-        val retIn = RetrofitInstance.getRetrofitInstance().create(ApiInterface::class.java)
-        val registerInfo =
-            RegisterRequest(email = email, username = username, password = password, name = name)
+    private fun showNotification(message: String) {
+        val dialog = Dialog(this@RegisterActivity)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(
+            LayoutInflater.from(this@RegisterActivity)
+                .inflate(R.layout.dialog_notification_error, null)
+        )
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+        val cancel = dialog.findViewById<MaterialButton>(R.id.btnCancel)
+        val tvMessage = dialog.findViewById<TextView>(R.id.tvMessage)
+        tvMessage.text = message
+        cancel.setOnClickListener {
+            dialog.dismiss()
+        }
+    }
 
-        retIn.signUp(registerInfo).enqueue(object :
-            Callback<LoginResponse> {
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                DialogUtil.progressDlgHide()
-                Toast.makeText(
-                    this@RegisterActivity,
-                    t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+    private fun containsLetterAndNumber(input: String): Boolean {
+        val letterPattern = ".*[a-zA-Z].*"
+        val digitPattern = ".*\\d.*"
 
-            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                if (response.body()?.code == 200) {
-                    val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-                    startActivity(intent)
-                    DialogUtil.progressDlgHide()
-                } else {
-                    DialogUtil.progressDlgHide()
-                    Toast.makeText(
-                        this@RegisterActivity,
-                        "Thành Phần Thông Tin Đã Tồn Tại! \nVui Lòng Kiểm Tra Lại",
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                }
-            }
+        return input.matches(Regex(letterPattern)) && input.matches(Regex(digitPattern))
+    }
 
-        })
+    private fun isValidEmail(email: String): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     private lateinit var auth: FirebaseAuth
@@ -106,11 +105,6 @@ class RegisterActivity : BaseActivity() {
     private fun registerByFirebase(accountName: String, email: String, password: String) {
         auth = Firebase.auth
         val currentUser = auth.currentUser
-
-
-
-
-
 
         if (currentUser != null) {
             //đã đăng nhập
@@ -123,13 +117,8 @@ class RegisterActivity : BaseActivity() {
                         val user = auth.currentUser
                         updateData(user, accountName, email)
                     } else {
-                        // If sign in fails, display a message to the user.
-                        Log.d("__reg", "createUserWithEmail:success")
-                        Toast.makeText(
-                            baseContext,
-                            "Authentication failed.",
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        DialogUtil.progressDlgHide()
+                        showNotification("Email đã có người sử dụng!")
 
                     }
                 }
@@ -138,9 +127,7 @@ class RegisterActivity : BaseActivity() {
     }
 
     private fun updateData(
-        user: FirebaseUser?,
-        accountName: String,
-        email: String
+        user: FirebaseUser?, accountName: String, email: String
     ) {
         val map: MutableMap<String, Any> = HashMap()
         val time = System.currentTimeMillis()
@@ -160,11 +147,12 @@ class RegisterActivity : BaseActivity() {
                 }
                 DialogUtil.progressDlgHide()
                 if (it.isSuccessful) {
-                    startActivity(Intent(this@RegisterActivity, HomeScreenActivity::class.java))
+                    val intent = Intent(this@RegisterActivity, HomeScreenActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
                     finish()
                 } else {
-                    Toast.makeText(this@RegisterActivity, "Đăng ký thất bại", Toast.LENGTH_SHORT)
-                        .show()
+                    showNotification("Đăng ký thất bại")
                 }
 
             }
